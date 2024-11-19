@@ -52,7 +52,13 @@ function generateRandomArea() {
 let targetArea = generateRandomArea(); // Zufällige Ziel-Fläche in cm²
 targetAreaDisplay.textContent = targetArea.toFixed(2);
 
-drawingArea.addEventListener('mousedown', (e) => {
+drawingArea.addEventListener('mousedown', startDrawing);
+drawingArea.addEventListener('touchstart', (e) => startDrawing(e.touches[0]));
+
+document.addEventListener('mouseup', stopDrawing);
+document.addEventListener('touchend', stopDrawing);
+
+function startDrawing(e) {
     if (!isDrawingEnabled) return;
 
     if (rect) {
@@ -70,14 +76,16 @@ drawingArea.addEventListener('mousedown', (e) => {
     drawingArea.appendChild(rect);
 
     drawingArea.addEventListener('mousemove', drawRectangle);
-});
+    drawingArea.addEventListener('touchmove', (e) => drawRectangle(e.touches[0]));
+}
 
-document.addEventListener('mouseup', () => {
+function stopDrawing() {
     if (!isDrawingEnabled) return;
-    
+
     drawingArea.removeEventListener('mousemove', drawRectangle);
+    drawingArea.removeEventListener('touchmove', (e) => drawRectangle(e.touches[0]));
     calculateAccuracy();
-});
+}
 
 function drawRectangle(e) {
     if (!isDrawingEnabled) return;
