@@ -4,6 +4,9 @@ const targetAreaDisplay = document.getElementById('targetArea');
 const drawnAreaDisplay = document.getElementById('drawnArea');
 const accuracyDisplay = document.getElementById('accuracy');
 const countdownDisplay = document.getElementById('countdown');
+const scoreDisplay = document.getElementById('score');
+let score = 0;
+let streak = 0;
 
 let startX, startY, rect;
 let isDrawingEnabled = true;
@@ -98,8 +101,14 @@ function calculateAccuracy() {
     const accuracy = (Math.min(drawnAreaCm, targetArea) / Math.max(drawnAreaCm, targetArea)) * 100;
     accuracyDisplay.textContent = accuracy.toFixed(2);
 
-    if (accuracy > 75) {
+    if (accuracy > 90) {
+        score++;
+        streak++;
+        scoreDisplay.textContent = `Score: ${score} (Streak: ${streak})`;
         startCountdown();
+    } else {
+        streak = 0;
+        scoreDisplay.textContent = `Score: ${score} (Streak: ${streak})`;
     }
 }
 
@@ -116,6 +125,15 @@ function startCountdown() {
         } else {
             clearInterval(interval);
             countdownDisplay.style.display = 'none';
+            if (rect) {
+                rect.classList.add('fade-out');
+                setTimeout(() => {
+                    if (rect) {
+                        drawingArea.removeChild(rect);
+                        rect = null;
+                    }
+                }, 1000); // Match the transition duration
+            }
             targetArea = generateRandomArea();
             targetAreaDisplay.textContent = targetArea.toFixed(2);
             isDrawingEnabled = true;
